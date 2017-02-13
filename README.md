@@ -1,6 +1,6 @@
 # wiz 快速搜索插件
 
-only for wiz windows.
+wiz 快速搜索插件，仅支持 windows。
 
 ![](示例图.jpg)
 
