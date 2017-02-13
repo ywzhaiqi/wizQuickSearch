@@ -6,7 +6,7 @@ gConfig.closeAfterOpen := false
 ; 常量
 global WIN_ME_TITLE := "wiz 快捷搜索"
 global WIN_WIZ_TITLE := "ahk_class WizNoteMainFrame"
-; 用到的变量
+; 变量
 MyListView :=
 global gDocs := []
 global gSearchType := "doc"
@@ -16,6 +16,7 @@ clearSearchData()
 ; TODO
 global gDocsFiltered := []
 
+; 运行
 global wiz := new Wiz()
 global wizAcc := new WizAcc()
 TCMatchOn("lib\tcmatch.dll")
