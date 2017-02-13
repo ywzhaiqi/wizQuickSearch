@@ -2,6 +2,8 @@
 
 only for wiz windows.
 
+![](示例图.jpg)
+
 ## 使用说明
 
 点击 `wizQuickSearch.exe` 启动后，使用按键 `#q` 打开搜索框搜索（支持拼音）。
