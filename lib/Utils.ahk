@@ -12,3 +12,10 @@ repeat(str, times) {
     }
     return out
 }
+
+Array_concat(ByRef arr1, ByRef arr2) {
+    loop % arr2.Length()
+    {
+        arr1.Push(arr2[A_Index])
+    }
+}

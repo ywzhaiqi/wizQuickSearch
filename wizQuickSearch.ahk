@@ -21,6 +21,10 @@ global wiz := new Wiz()
 global wizAcc := new WizAcc()
 TCMatchOn("lib\tcmatch.dll")
 InitGui()
+Menu, Tray, icon, %A_ScriptDir%\wizQuickSearch.ico
+
+WinWaitClose, ahk_exe Wiz.exe
+ExitApp
 
 ; 注册调用热键
 ;#IfWinActive, ahk_class WizNoteMainFrame
@@ -30,8 +34,8 @@ InitGui()
         try {
             gDocs := wiz.getAllDocs(0)
         } catch e {
-            wiz := new Wiz()
-            gDocs := wiz.getAllDocs(0)
+            msgbox 请重新启动
+            ExitApp
         }
         
         Gui, Show, xCenter yCenter, % WIN_ME_TITLE
@@ -58,6 +62,7 @@ InitGui() {
         Hotkey, ~down, FocusListView
         Hotkey, ~left, FocusEdit
         Hotkey, ~right, FocusEdit
+        Hotkey, ~BS, FocusEdit
         Hotkey, ^enter, SendDocuments
     Hotkey, IfWinActive
 }
@@ -81,13 +86,7 @@ FocusEdit:
 return
 
 SendDocuments:
-    if (gSearchType == "doc") {
-        if (gDocsFiltered.Length())
-            wiz.sendDocuments(gDocsFiltered)
-        else
-            wiz.newDocument()
-        WinActivate, % WIN_WIZ_TITLE
-    }
+    sendDocuments()
 return
 
 ;~ #if NotFocusListView()
@@ -177,7 +176,8 @@ searchDoc(searchWord) { ; 搜索文档标题
         searchTitle := info.search ? info.search : displayTitle
         if TCMatch(searchTitle, searchWord)
         {
-            LV_Add((index == 1 ? "Focus Select" : ""), displayTitle, info.tagText, i)
+            ; if (gSearchType != "doc")
+                LV_Add((index == 1 ? "Focus Select" : ""), displayTitle, info.tagText, i)
 
             index++
             gDocsFiltered.Push(info)
@@ -185,6 +185,31 @@ searchDoc(searchWord) { ; 搜索文档标题
         if searchBreak
             break
     }
+
+    ; ; 提高 doc 搜索的精准度。
+    ; if (gSearchType == "doc") {
+    ;     docSorted := []
+    ;     docSorted2 := []
+    ;     For i, info in gDocsFiltered
+    ;     {
+    ;         if TCMatch(info.title, searchWord)
+    ;             docSorted.Push(info)
+    ;         else
+    ;             docSorted2.Push(info)
+    ;     }
+
+    ;     Array_concat(docSorted, docSorted2)
+
+    ;     gDocsFiltered := []
+    ;     For i, info in docSorted
+    ;     {
+    ;         LV_Add((i == 1 ? "Focus Select" : ""), info.title, info.tagText, i)
+    ;         gDocsFiltered.Push(info)
+    ;         if searchBreak
+    ;             break
+    ;     }
+    ; }
+
 }
 
 openSelectedDoc(rowNum) {
@@ -192,7 +217,7 @@ openSelectedDoc(rowNum) {
     data := gSearchData[gSearchType]
 
     if (gSearchType == "doc") {
-        doc := gDocs[index]
+        doc := gDocsFiltered[rowNum]
         wiz.openDoc(doc.guid)
     } else if (gSearchType == "tag") {
         wiz.openTag(data[index])
@@ -206,6 +231,16 @@ openSelectedDoc(rowNum) {
     
     if (gConfig.closeAfterOpen)
         Gui, Cancel
+}
+
+sendDocuments() {
+    if (gSearchType == "doc") {
+        if (gDocsFiltered.Length())
+            wiz.sendDocuments(gDocsFiltered)
+        else
+            wiz.newDocument()
+        WinActivate, % WIN_WIZ_TITLE
+    }
 }
 
 searchOther() { ; 搜索文件夹、标签
