@@ -191,7 +191,9 @@ class Wiz {
 
     openDoc(docGuid) {
         wizDoc := this.getDocument(docGuid)
-        this.objApp.Window.ViewDocument(wizDoc, true)
+        if (wizDoc) {
+            this.objApp.Window.ViewDocument(wizDoc, true)
+        }
     }
 
     openTag(info) {

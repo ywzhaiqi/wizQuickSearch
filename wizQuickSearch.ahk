@@ -213,6 +213,10 @@ searchDoc(searchWord) { ; 搜索文档标题
 }
 
 openSelectedDoc(rowNum) {
+    if (rowNum == 0) {
+        return
+    }
+    
     LV_GetText(index, rowNum, 3)
     data := gSearchData[gSearchType]
 
