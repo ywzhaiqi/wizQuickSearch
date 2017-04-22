@@ -8,9 +8,9 @@ wiz（为知笔记）快速搜索插件，仅支持 windows。
 
 ### 安装
 
-以插件形式安装：下载并安装 `wizQuickSearch.wizplugin`，然后在 wiz 菜单 `工具->wiz快速搜索` 点击启动。
+以插件形式安装：在 [Releases](https://github.com/ywzhaiqi/wizQuickSearch/releases) 处下载并安装 `wizQuickSearch.wizplugin`，然后在 wiz 菜单 `工具->wiz快速搜索` 点击启动。
 
-也可直接下载源文件，放在独立目录，点击 `wizQuickSearch.exe` 启动。
+也可直接下载[源文件](https://github.com/ywzhaiqi/wizQuickSearch.git)，放在独立目录，点击 `wizQuickSearch.exe` 启动。
 
 注意：wiz 关闭后会自动退出，重新打开 wiz 也要重新启动本工具。
 
