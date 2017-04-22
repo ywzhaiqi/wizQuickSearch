@@ -19,7 +19,7 @@ global gDocsFiltered := []
 ; 运行
 global wiz := new Wiz()
 global wizAcc := new WizAcc()
-TCMatchOn("lib\tcmatch.dll")
+TCMatchOn(A_ScriptDir "\lib\tcmatch.dll")
 InitGui()
 Menu, Tray, icon, %A_ScriptDir%\wizQuickSearch.ico
 
@@ -42,6 +42,7 @@ ExitApp
         GuiControl, Focus, Edit1
         GuiControl, , Edit1,
         ;SwitchIME2()
+
     return
 ; #IfWinActive
 
