@@ -70,13 +70,16 @@ class Wiz {
     getFolders() {
         folders := []
 
+        ; 按修改日期排序，但是存在子文件夹，没法直接定位到第一个
         sql = 
         (
             SELECT DISTINCT
-            DOCUMENT_LOCATION, DOCUMENT_GUID
+                DOCUMENT_LOCATION,
+                DOCUMENT_GUID
             FROM
-            WIZ_DOCUMENT
-            GROUP BY DOCUMENT_LOCATION
+                (SELECT * FROM WIZ_DOCUMENT ORDER BY DT_MODIFIED)
+            GROUP BY
+                DOCUMENT_LOCATION
         )
 
         this.sqliteDB.Open(this.DB_PATH)
@@ -113,7 +116,7 @@ class Wiz {
         params := "/DatabasePath="  databasePath  " /KbGUID="  KbGUID  " /DocumentGUID="  documentGUID
         this.objApp.Window.ExecCommand("locatedocument", params)
     }
-    ; 获取第一个文档耗时太久，耗时 4.5s
+    ; （已弃用）由于获取第一个文档耗时太久，耗时 4.5s
     getFolders2() {
         this.db.Open("")
 

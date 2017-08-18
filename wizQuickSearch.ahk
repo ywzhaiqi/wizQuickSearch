@@ -30,7 +30,6 @@ ExitApp
 ;#IfWinActive, ahk_class WizNoteMainFrame
     ;^p::
     #q::
-        ; 解决 wiz 重启后报错
         try {
             gDocs := wiz.getAllDocs(0)
         } catch e {
