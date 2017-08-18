@@ -36,7 +36,7 @@ ExitApp
             msgbox 请重新启动
             ExitApp
         }
-        
+
         Gui, Show, xCenter yCenter, % WIN_ME_TITLE
         GuiControl, Focus, Edit1
         GuiControl, , Edit1,
@@ -47,7 +47,7 @@ ExitApp
 
 InitGui() {
     WIDTH := 550
-    
+
     Gui, Add, Edit, r1 w%WIDTH% gSearchChange
     Gui, Add, ListView, xm r20 w%WIDTH% vMyListView gMyListView, 标题|标签|docIndex
     Gui, Add, Button, Hidden Default w0 h0, OK
@@ -154,6 +154,9 @@ getData(type) {
     return data
 }
 
+; 用于去除重复
+global gFilteredGuids := {}
+
 searchDoc(searchWord) { ; 搜索文档标题
     global searchBreak
 
@@ -177,6 +180,9 @@ searchDoc(searchWord) { ; 搜索文档标题
         allItems := gDocs
     }
 
+    ; 重置 cache
+    gFilteredGuids := {}
+
     ; 如果是 doc 类型，先搜索标题
     addSearchResult(allItems, searchWord)
 
@@ -195,19 +201,24 @@ addSearchResult(allItems, searchWord, isSearchTag:=False) {
     index := isSearchTag ? 100 : 1
     for i, info in allItems
     {
+        if (gFilteredGuids[info.guid]) {
+            continue
+        }
+
         displayTitle := info.displayTitle ? info.displayTitle : info.title
         if (isSearchTag) {
             searchTitle := info.tagText ? info.tagText : displayTitle
         } else {
-            searchTitle := info.search ? info.search : displayTitle 
+            searchTitle := info.search ? info.search : displayTitle
         }
-        
+
         if TCMatch(searchTitle, searchWord)
         {
             LV_Add((index == 1 ? "Focus Select" : ""), displayTitle, info.tagText, i)
 
             index++
             gDocsFiltered.Push(info)
+            gFilteredGuids[info.guid] := True
         }
         if searchBreak
             break
@@ -218,7 +229,7 @@ openSelectedDoc(rowNum) {
     if (rowNum == 0) {
         return
     }
-    
+
     LV_GetText(index, rowNum, 3)
     data := gSearchData[gSearchType]
 
@@ -234,7 +245,7 @@ openSelectedDoc(rowNum) {
     }
 
     WinActivate, % WIN_WIZ_TITLE
-    
+
     if (gConfig.closeAfterOpen)
         Gui, Cancel
 }
