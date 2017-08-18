@@ -53,12 +53,8 @@ class Wiz {
         For i, doc in docs
         {
             sTag := tagsMap[doc.guid]
-            ;if sTag
-            ;    doc.displayTitle := doc.title "  " sTag
-            ;else
-            ;    doc.displayTitle := doc.title
             doc.tagText := sTag
-            doc.search := doc.title " " sTag
+            ; doc.search := doc.title " " sTag
         }
     }
 

@@ -51,6 +51,7 @@ InitGui() {
     Gui, Add, Edit, r1 w%WIDTH% gSearchChange
     Gui, Add, ListView, xm r20 w%WIDTH% vMyListView gMyListView, 标题|标签|docIndex
     Gui, Add, Button, Hidden Default w0 h0, OK
+    GUi, Add, StatusBar, ,
 
     COLUMN1_WIDTH := 360
     LV_ModifyCol(1, COLUMN1_WIDTH)
@@ -133,6 +134,12 @@ ButtonOK:
     openSelectedDoc(rowNum)
 return
 
+SetStatusBar() {
+    size := gDocsFiltered.Length()
+
+    SB_SetText("共找到 " . size . " 条")
+}
+
 getData(type) {
     if (type == "tag") {
         data := wiz.getAllTags()
@@ -152,6 +159,7 @@ searchDoc(searchWord) { ; 搜索文档标题
 
     ; 判断搜索的类型
     gSearchType := ""
+    allItems := []
     for searchType, searchKey in gSearchKeys
     {
         if (searchKey and InStr(searchWord, searchKey) == 1) {
@@ -159,25 +167,44 @@ searchDoc(searchWord) { ; 搜索文档标题
             searchWord := LTrim(searchWord, searchKey)
             if not gSearchData[searchType].Length()
                 gSearchData[searchType] := getData(searchType)
-            data := gSearchData[searchType]
+            allItems := gSearchData[searchType]
             break
         }
     }
 
     if (!gSearchType) {
         gSearchType := "doc"
-        data := gDocs
+        allItems := gDocs
     }
 
-    index := 1
-    for i, info in data
+    ; 如果是 doc 类型，先搜索标题
+    addSearchResult(allItems, searchWord)
+
+    ; 如果是 doc 类型，再搜索 tag
+    if (gSearchType == "doc") {
+        addSearchResult(allItems, searchWord, true)
+    }
+
+    ; TODO total 不准确，有延迟
+    SetStatusBar()
+}
+
+addSearchResult(allItems, searchWord, isSearchTag:=False) {
+    global searchBreak
+
+    index := isSearchTag ? 100 : 1
+    for i, info in allItems
     {
         displayTitle := info.displayTitle ? info.displayTitle : info.title
-        searchTitle := info.search ? info.search : displayTitle
+        if (isSearchTag) {
+            searchTitle := info.tagText ? info.tagText : displayTitle
+        } else {
+            searchTitle := info.search ? info.search : displayTitle 
+        }
+        
         if TCMatch(searchTitle, searchWord)
         {
-            ; if (gSearchType != "doc")
-                LV_Add((index == 1 ? "Focus Select" : ""), displayTitle, info.tagText, i)
+            LV_Add((index == 1 ? "Focus Select" : ""), displayTitle, info.tagText, i)
 
             index++
             gDocsFiltered.Push(info)
@@ -185,31 +212,6 @@ searchDoc(searchWord) { ; 搜索文档标题
         if searchBreak
             break
     }
-
-    ; ; 提高 doc 搜索的精准度。
-    ; if (gSearchType == "doc") {
-    ;     docSorted := []
-    ;     docSorted2 := []
-    ;     For i, info in gDocsFiltered
-    ;     {
-    ;         if TCMatch(info.title, searchWord)
-    ;             docSorted.Push(info)
-    ;         else
-    ;             docSorted2.Push(info)
-    ;     }
-
-    ;     Array_concat(docSorted, docSorted2)
-
-    ;     gDocsFiltered := []
-    ;     For i, info in docSorted
-    ;     {
-    ;         LV_Add((i == 1 ? "Focus Select" : ""), info.title, info.tagText, i)
-    ;         gDocsFiltered.Push(info)
-    ;         if searchBreak
-    ;             break
-    ;     }
-    ; }
-
 }
 
 openSelectedDoc(rowNum) {
