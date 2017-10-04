@@ -92,7 +92,7 @@ class Wiz {
             displayTitle := repeat("  ", arr.Length() - 1) . title
 
             folders.Push({ title: title, displayTitle: displayTitle, location: location
-                , search: StrReplace(location, "/", " "), docGuid: docGuid })
+                , search: StrReplace(location, "/", " "), guid: docGuid })
             rowset.MoveNext()
         }
 
@@ -105,7 +105,7 @@ class Wiz {
         return out
     }
     openFolder(info) {
-        documentGUID := info.docGuid
+        documentGUID := info.guid
         databasePath := this.objApp.Database.DatabasePath
         KbGUID := this.objApp.Database.KbGUID
 
